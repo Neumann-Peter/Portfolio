@@ -1,0 +1,183 @@
+//File Handler
+    internal static class FileHandling
+    {
+        public static void Save(string fileName, List<IVehicle> vehicles)
+        {
+            using (StreamWriter writer = new StreamWriter(fileName))
+            {
+                foreach (var vehicle in vehicles)
+                {
+                    if (vehicle is Car)
+                    {
+                        Car car = (Car)vehicle;
+                        writer.WriteLine($"Car,{car.Brand},{car.Speed}");
+                    }
+                    else if (vehicle is Truck)
+                    {
+                        Truck truck = (Truck)vehicle;
+                        writer.WriteLine($"Truck,{truck.Brand},{truck.LoadCapacity}");
+                    }
+                }
+            }
+            Console.WriteLine($"Saved: {fileName}");
+        }
+
+        public static List<IVehicle> Load(string fileName)
+        {
+            List<IVehicle> loadedVehicles = new List<IVehicle>();
+            using (StreamReader reader = new StreamReader(fileName))
+            {
+                string line;
+                while ((line = reader.ReadLine()) != null)
+                {
+                    string[] parts = line.Split(',');
+                    if (parts.Length >= 3)
+                    {
+                        if (parts[0] == "Car")
+                        {
+                            string brand = parts[1];
+                            int speed = int.Parse(parts[2]);
+                            loadedVehicles.Add(new Car(brand, speed));
+                        }
+                        else if (parts[0] == "Truck")
+                        {
+                            string brand = parts[1];
+                            int loadCapacity = int.Parse(parts[2]);
+                            loadedVehicles.Add(new Truck(brand, loadCapacity));
+                        }
+                    }
+                }
+            }
+            Console.WriteLine($"Loaded: {fileName}");
+            return loadedVehicles;
+        }
+    }
+
+    public void Kiir(string filename)
+        {
+            using (StreamWriter sw = new StreamWriter(filename))
+            {
+                sw.WriteLine(Megnevezes);
+                foreach (Probalkozas probalkozas in _probalkozasok)
+                {
+                    sw.WriteLine($"{probalkozas.Nev} {probalkozas.Tavolsag} {probalkozas.Ervenyes}");
+                }
+            }
+        }
+
+//Interface
+
+internal interface IVehicle
+{
+    void Move();
+}
+
+//Interface Use
+internal class Car : IVehicle
+{
+    public string Brand { get; private set; }
+    public int Speed { get; private set; }
+
+    public Car(string brand, int speed)
+    {
+        Brand = brand;
+        Speed = speed;
+    }
+
+    public void Move()
+    {
+        Console.WriteLine($"Moving: Car - {Brand}, Speed: {Speed} km/h");
+    }
+
+    public override string ToString()
+    {
+        return $"Car - {Brand}, Speed: {Speed} km/h";
+    }
+}
+
+// Manager List-tel
+
+internal class VehicleManager
+{
+    private List<IVehicle> vehicles = new List<IVehicle>();
+
+    public List<IVehicle> Vehicles { get { return vehicles; } }
+
+    public void Print()
+    {
+        Console.WriteLine("Vehicle list:");
+        foreach (var vehicle in vehicles)
+        {
+            Console.WriteLine(vehicle);
+        }
+    }
+
+    public void AddVehicle(IVehicle vehicle)
+    {
+        vehicles.Add(vehicle);
+    }
+
+    public void MoveVehicles()
+    {
+        Console.WriteLine("Moving vehicles:");
+        foreach (var vehicle in vehicles)
+        {
+            vehicle.Move();
+        }
+    }
+
+// Additional task: Countdown
+    public void Countdown()
+    {
+        Console.WriteLine("Countdown started:");
+        for (int i = 5; i >= 0; i--)
+        {
+            Console.WriteLine($"Elapsed time: {5 - i} seconds");
+            System.Threading.Thread.Sleep(1000); // 1-second delay
+        }
+    }
+}
+
+// Abstract
+
+internal abstract class Vehicle
+{
+    public int Mass { get; set; }
+    public int Speed { get; set; }
+
+    public Vehicle(int mass, int speed)
+    {
+        Mass = mass;
+        Speed = speed;
+    }
+
+    public virtual void Print()
+    {
+        Console.WriteLine($"Tömeg: {Mass}, Sebesség: {Speed}");
+    }
+
+    public abstract int GetNumberOfWheels();
+}
+
+// Abstract USE
+
+internal class Ship : Vehicle
+{
+    public int Capacity { get; set; }
+
+    public Ship(int mass, int speed, int capacity) : base(mass, speed)
+    {
+        Capacity = capacity;
+    }
+
+    public override void Print()
+    {
+        base.Print();
+        Console.WriteLine($"Teherbiras: {Capacity}");
+    }
+
+    public override int GetNumberOfWheels()
+    {
+        return 0;
+    }
+}
